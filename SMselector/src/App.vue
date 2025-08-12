@@ -47,7 +47,7 @@
 
 <script>
 
-import {client,sendRequest} from './client.js'
+import {client,sendRequest} from './client.ts'
 import _ from 'lodash'
 
 export default {

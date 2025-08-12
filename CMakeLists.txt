@@ -1,5 +1,7 @@
+cmake_minimum_required(VERSION 3.10)
+
 set(PLUGIN_NAME "WebSocketPlugin")
-REGISTER_PLUGIN(${CMAKE_CURRENT_SOURCE_DIR} ${PLUGIN_NAME})
+add_library(${PLUGIN_NAME} SHARED)
 
 # FIND_PACKAGE(websocketpp REQUIRED)
 
