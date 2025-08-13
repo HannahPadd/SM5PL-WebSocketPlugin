@@ -1,57 +1,14 @@
-<template>
-  <b-container id="app" style="padding-top: 30px; padding-bottom: 60px;">
-    <b-progress v-if="loading" :value="groups.length - loadingLeft" :max="groups.length" class="mb-12" style="margin-bottom: 30px"></b-progress>
-
-    <b-navbar fixed="bottom" style="background-color: white">
-      <b-container>
-        <b-form-input v-model="filter" style="display: inline-block;" :placeholder="'Search ' + items.length + ' songs'" class="w-75"></b-form-input>
-        <b-button @click="reset()" class="ml-4" style="display: inline-block;">Clear</b-button>
-      </b-container>
-    </b-navbar>
-
-    <b-table
-     id="itemList"
-     v-if="!loading"
-    striped hover
-    :items="itemsForList"
-    :fields="fields" 
-    :sort-by.sync="sortBy"
-    :sort-desc.sync="sortDesc" >
-
-      <template #cell(group)="data">
-        <a href="javascript:void(0)" @click="filter = data.value">{{ data.value }}</a>
-      </template>
-
-      <template #cell(actions)="row">
-        <b-button size="sm" @click="() => selectSong(row.item)">
-          Select
-        </b-button>
-      </template>
-
-    </b-table>
-
-    <b-pagination
-      v-if="!loading"
-      v-model="currentPage"
-      :total-rows="itemsFiltered.length"
-      :per-page="perPage"
-      align="center"
-      aria-controls="itemList"
-      first-number
-      last-number
-      limit=10
-    ></b-pagination>
-
-  </b-container>
-</template>
-
 <script>
-
 import {client,sendRequest} from './client.ts'
+import SongFilterBar from './components/SearchBar.vue'
 import _ from 'lodash'
 
 export default {
   name: 'App',
+
+  components: {
+    SongFilterBar,
+  },
 
   watch: {
     filter() {
@@ -184,3 +141,44 @@ export default {
 <style>
 
 </style>
+
+<template>
+  <div id="app" style="padding-top: 30px; padding-bottom: 60px;">
+    <progress v-if="loading" :value="groups.length - loadingLeft" :max="groups.length" class="mb-12" style="margin-bottom: 30px"></progress>
+
+    <div id="SongSearch">
+
+      <SongFilterBar />
+
+    </div>
+
+    <table id="itemList">
+      <thead>
+        <tr>
+          <th v-for="field in fields" :key="field.key">{{ field.label }}</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in itemsForList" :key="item.title">
+          <td>
+            <a href="javascript:void(0)" @click="filter = item.group">{{ item.group }}</a>
+          </td>
+          <td>{{ item.title }}</td>
+          <td>{{ item.artist }}</td>
+          <td>{{ item.charts }}</td>
+          <td>
+            <button @click="() => selectSong(item)">Select</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <button :disabled="currentPage === 1" @click="currentPage--">Prev</button>
+      <span>Page {{ currentPage }}</span>
+      <button :disabled="currentPage * perPage >= itemsFiltered.length" @click="currentPage++">Next</button>
+    </div>
+  </div>
+</template>
+
